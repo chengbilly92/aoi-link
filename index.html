@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>大創造時代 Online</title>
+<style>
+  :root { color-scheme: light dark; --bg: #f6f3ec; --fg: #2b2a27; --muted: #6b675f; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #1d1c1a; --fg: #ece8df; --muted: #a39e94; } }
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: var(--bg); color: var(--fg);
+         font: 16px/1.6 system-ui, -apple-system, "PingFang TC", "Noto Sans TC", sans-serif; }
+  main { padding: 24px 16px; text-align: center; }
+  h1 { font-size: 22px; margin: 0 0 8px; }
+  p { margin: 0; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <h1>大創造時代 Online</h1>
+  <p id="msg">正在前往遊戲網站…</p>
+</main>
+<script>
+// Fixed entry point published by aoi-service.sh: forwards to the current tunnel URL from url.json and keeps
+// "#/game/<id>?token=…" as the path there. The part after "#" is never sent to GitHub, so seat tokens stay
+// between the browser and the game server.
+const rest = location.hash.startsWith('#/') ? location.hash.slice(1) : '/';
+fetch('url.json?t=' + Date.now(), { cache: 'no-store' })
+  .then(r => (r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status))))
+  .then(({ url }) => {
+    if (!/^https:\/\/[^/]+$/.test(url)) throw new Error('bad url');
+    location.replace(url + rest);
+  })
+  .catch(() => {
+    document.getElementById('msg').textContent = '暫時找不到遊戲網址，請過一分鐘再重新整理。';
+  });
+</script>
+</body>
+</html>
